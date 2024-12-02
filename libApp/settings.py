@@ -32,18 +32,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)y^s(_w&-fw$j6-rn5#i8z72k64eelyyh*n2n58qhf9lht=w1-'
+SECRET_KEY = env('SECRET_KEY', default="secret_key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == 'development':
     DEBUG = True
 else:
-    DEBUG = True
+    DEBUG = False
 
 
-ALLOWED_HOSTS = ['127.0.0.1','docker-production-c556.up.railway.app']
+ALLOWED_HOSTS = ['127.0.0.1','docker-production-c556.up.railway.app','https://docker-production-c556.up.railway.app']
 
-CSRF_TRUSTED_ORIGINS = ['docker-production-c556.up.railway.app']
+if ENVIRONMENT == 'production':
+    CSRF_TRUSTED_ORIGINS = ['docker-production-c556.up.railway.app','https://docker-production-c556.up.railway.app']
 
 
 # Application definition
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'libApp.urls'
@@ -100,13 +102,13 @@ WSGI_APPLICATION = 'libApp.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+if ENVIRONMENT == 'development':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 # if ENVIRONMENT == 'development':
 #     DATABASES = {
 #         'default': {
@@ -120,10 +122,10 @@ WSGI_APPLICATION = 'libApp.wsgi.application'
 #     }
 # else:
 #     import dj_database_url
-
-DATABASES = {
-    'default': dj_database_url.parse('postgresql://postgres:vEEaQzxMPKBIkvMKhrXScjZFWqbwQcmw@junction.proxy.rlwy.net:43116/railway')
-}
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(env('DATABASE_URL', default='postgresql://'))
+    }
 
 
 # Password validation
@@ -159,11 +161,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [BASE_DIR / 'static']
+# STATICFILES_DIRS = [BASE_DIR / 'static']
 
 
 # Default primary key field type

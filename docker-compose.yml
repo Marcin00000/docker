@@ -1,0 +1,33 @@
+#version: "3.8"
+name: docker-app
+services:
+  app:
+    build: .
+    image: app-image
+    container_name: app-container
+    command: /app/entrypoint.sh
+    ports:
+      - "8001:8000"
+#    volumes:
+#      - .:/app
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+
+  postgres:
+    ports:
+      - "5432:5432"
+    image: postgres
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data:

@@ -10,8 +10,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+import json
 from pathlib import Path
+
+import dj_database_url
 from django.contrib.messages import constants as messages
+
+from environ import Env
+env = Env()
+Env.read_env()
+
+ENVIRONMENT = env('ENVIRONMENT', default="development")
+# ENVIRONMENT = "production"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,9 +35,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-)y^s(_w&-fw$j6-rn5#i8z72k64eelyyh*n2n58qhf9lht=w1-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -85,11 +99,28 @@ WSGI_APPLICATION = 'libApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+# if ENVIRONMENT == 'development':
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'postgres',
+#             'USER': 'postgres',
+#             'PASSWORD': 'postgres',
+#             'HOST': 'postgres',
+#             'PORT': '5432',
+#         }
+#     }
+# else:
+#     import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse('postgresql://postgres:vEEaQzxMPKBIkvMKhrXScjZFWqbwQcmw@junction.proxy.rlwy.net:43116/railway')
 }
 
 
@@ -126,10 +157,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
